@@ -1,10 +1,12 @@
 package model;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Patient extends People {
     private String job;
-    private Doctor doctor;
+    private List<Doctor> doctors;
+    private List<Clinic> clinics;
 
     public String getJob() {
         return job;
@@ -14,12 +16,20 @@ public class Patient extends People {
         this.job = job;
     }
 
-    public Doctor getDoctor() {
-        return doctor;
+    public List<Doctor> getDoctors() {
+        return doctors;
     }
 
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
+    public void setDoctors(List<Doctor> doctors) {
+        this.doctors = doctors;
+    }
+
+    public List<Clinic> getClinics() {
+        return clinics;
+    }
+
+    public void setClinics(List<Clinic> clinics) {
+        this.clinics = clinics;
     }
 
     @Override
@@ -28,19 +38,20 @@ public class Patient extends People {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Patient patient = (Patient) o;
-        return Objects.equals(job, patient.job) && Objects.equals(doctor, patient.doctor);
+        return Objects.equals(job, patient.job) && Objects.equals(doctors, patient.doctors) && Objects.equals(clinics, patient.clinics);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), job, doctor);
+        return Objects.hash(super.hashCode(), job, doctors, clinics);
     }
 
     @Override
     public String toString() {
         return "Patient{" +
                 "job='" + job + '\'' +
-                ", doctor=" + doctor +
+                ", doctors=" + doctors +
+                ", clinics=" + clinics +
                 '}';
     }
 }
