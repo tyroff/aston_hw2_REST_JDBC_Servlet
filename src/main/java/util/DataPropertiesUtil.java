@@ -10,7 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public final class DBPropertiesUtil {
+public final class DataPropertiesUtil {
     private static final String PROPERTIES_FILE = "db.properties";
     private static HikariConfig config = new HikariConfig();
     private static HikariDataSource ds;
@@ -28,7 +28,7 @@ public final class DBPropertiesUtil {
         }
     }
 
-    private DBPropertiesUtil() {}
+    private DataPropertiesUtil() {}
 
     public static Connection getConnection() throws SQLException {
         return ds.getConnection();
