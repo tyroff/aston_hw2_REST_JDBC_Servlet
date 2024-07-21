@@ -12,8 +12,8 @@ import java.util.Properties;
 
 public final class DataPropertiesUtil {
     private static final String PROPERTIES_FILE = "db.properties";
-    private static HikariConfig config = new HikariConfig();
-    private static HikariDataSource ds;
+    private static final HikariConfig config = new HikariConfig();
+    private static final HikariDataSource ds;
 
     static {
         try {
@@ -46,4 +46,7 @@ public final class DataPropertiesUtil {
         return properties;
     }
 
+    public static DataSource getDataSource() {
+        return ds;
+    }
 }
