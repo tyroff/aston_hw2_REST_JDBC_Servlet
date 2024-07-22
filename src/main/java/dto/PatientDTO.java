@@ -5,6 +5,7 @@ import model.Doctor;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class PatientDTO {
     private Long id;
@@ -13,20 +14,6 @@ public class PatientDTO {
     private String job;
     private List<Doctor> doctors;
     private List<Clinic> clinics;
-
-    public PatientDTO() {
-    }
-
-    public PatientDTO(Long id, String lastName, String firstName, String patronymic, Date birthday, String job, List<Doctor> doctors, List<Clinic> clinics) {
-        this.id = id;
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.patronymic = patronymic;
-        this.birthday = birthday;
-        this.job = job;
-        this.doctors = doctors;
-        this.clinics = clinics;
-    }
 
     public Long getId() {
         return id;
@@ -90,5 +77,32 @@ public class PatientDTO {
 
     public void setClinics(List<Clinic> clinics) {
         this.clinics = clinics;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PatientDTO that = (PatientDTO) o;
+        return Objects.equals(id, that.id) && Objects.equals(lastName, that.lastName) && Objects.equals(firstName, that.firstName) && Objects.equals(patronymic, that.patronymic) && Objects.equals(birthday, that.birthday) && Objects.equals(job, that.job) && Objects.equals(doctors, that.doctors) && Objects.equals(clinics, that.clinics);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, lastName, firstName, patronymic, birthday, job, doctors, clinics);
+    }
+
+    @Override
+    public String toString() {
+        return "PatientDTO{" +
+                "id=" + id +
+                ", lastName='" + lastName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", patronymic='" + patronymic + '\'' +
+                ", birthday=" + birthday +
+                ", job='" + job + '\'' +
+                ", doctors=" + doctors +
+                ", clinics=" + clinics +
+                '}';
     }
 }

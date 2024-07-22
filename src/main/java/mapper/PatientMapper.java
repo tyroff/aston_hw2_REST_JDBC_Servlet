@@ -11,7 +11,7 @@ import java.util.Optional;
 @Mapper
 public interface PatientMapper {
     PatientMapper INSTANCE = Mappers.getMapper(PatientMapper.class);
-    PatientDTO patientToDTO(Optional<Patient> patient);
+    PatientDTO patientToDTO(Patient patient);
     Patient DTOtoPatient(PatientDTO patientDTO);
     List<PatientDTO> patientsToDTOs(List<Patient> patients);
 

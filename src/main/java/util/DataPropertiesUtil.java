@@ -37,7 +37,7 @@ public final class DataPropertiesUtil {
     private static Properties loadProperties() throws IOException {
         Properties properties = new Properties();
 
-        try (InputStream inputStream = DataSource.class.getResourceAsStream(PROPERTIES_FILE)) {
+        try (InputStream inputStream = DataPropertiesUtil.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE)) {
             if (inputStream == null) {
                 throw new RuntimeException("The file of " + PROPERTIES_FILE + " isn't fond!");
             }

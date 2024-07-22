@@ -3,7 +3,6 @@ package controller;
 import com.google.gson.Gson;
 import dao.PatientDaoImp;
 import dto.PatientDTO;
-import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,9 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import service.PatientService;
 import util.DataPropertiesUtil;
 
-import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.SQLException;
 
 @WebServlet("/patients/*")
 public class PatientServlet extends HttpServlet {
@@ -22,12 +19,12 @@ public class PatientServlet extends HttpServlet {
     private PatientService patientService;
     private final Gson gson = new Gson();
     @Override
-    public void init() throws ServletException {
+    public void init() {
         this.patientService = new PatientService(new PatientDaoImp(DataPropertiesUtil.getDataSource()));
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo();
         try {
             resp.setContentType("application/json");
@@ -41,7 +38,7 @@ public class PatientServlet extends HttpServlet {
                 resp.getWriter().write(patientJson);
             }
         } catch (NumberFormatException e) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID format.");
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid patient ID format.");
         }
     }
 

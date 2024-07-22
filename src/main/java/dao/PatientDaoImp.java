@@ -10,7 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 public class PatientDaoImp implements IPatientDao {
     private final DataSource source;
@@ -24,18 +23,18 @@ public class PatientDaoImp implements IPatientDao {
     }
 
     @Override
-    public Optional<Patient> getById(Long id) {
+    public Patient getById(Long id) {
         Patient patient = null;
         if (id != null) {
-
             try(Connection connection = source.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement(
                         "SELECT lastname, firstname, patronymic, birthday, job, doctors, clinics" +
-                                "FROM patient WHERE id = ?"
+                                " FROM patient WHERE id = ?"
                 );
                 statement.setLong(1, id);
                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
+                    patient = new Patient();
                     patient.setId(id);
                     patient.setLastName(resultSet.getString("lastname"));
                     patient.setFirstName(resultSet.getString("firstname"));
@@ -52,7 +51,7 @@ public class PatientDaoImp implements IPatientDao {
                 throw new RuntimeException(e);
             }
         }
-        return Optional.ofNullable(patient);
+        return patient;
     }
 
 
