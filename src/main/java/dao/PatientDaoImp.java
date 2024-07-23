@@ -1,11 +1,12 @@
 package dao;
 
-import model.Clinic;
-import model.Doctor;
 import model.Patient;
 
 import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,16 +31,13 @@ public class PatientDaoImp implements IPatientDao {
         if (patient != null) {
             try(Connection connection = source.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement("INSERT INTO patient (lastname, firstname, " +
-                        "patronymic, birthday, job, doctors, clinics) " +
-                                "VALUES (?,?,?,?,?,?,?)");
+                        "patronymic, job) " +
+                                "VALUES (?,?,?,?)");
                 //TODO: add doctors and clinics
                 statement.setString(1, patient.getLastName());
                 statement.setString(2, patient.getFirstName());
                 statement.setString(3, patient.getPatronymic());
-                statement.setDate(4, (Date) patient.getBirthday());
-                statement.setString(5, patient.getJob());
-                statement.setString(6, null);
-                statement.setString(7, null);
+                statement.setString(4, patient.getJob());
                 statement.executeUpdate();
             }
         }
@@ -48,7 +46,7 @@ public class PatientDaoImp implements IPatientDao {
     /**
      * Returns one entity Patient by id otherwise null.
      * @param id id entity Patient.
-     * @return
+     * @return entity Patient.
      */
     @Override
     public Patient getById(Long id) {
@@ -56,12 +54,20 @@ public class PatientDaoImp implements IPatientDao {
         if (id != null) {
             try(Connection connection = source.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement(
-                        "SELECT lastname, firstname, patronymic, birthday, job, doctors, clinics " +
+                        "SELECT lastname, firstname, patronymic, job " +
                                 "FROM patient WHERE id = ?"
                 );
                 statement.setLong(1, id);
                 ResultSet resultSet = statement.executeQuery();
-                patient = createPatient(resultSet);
+                if (resultSet.next()) {
+                    patient = new Patient();
+                    patient.setId(id);
+                    patient.setLastName(resultSet.getString("lastname"));
+                    patient.setFirstName(resultSet.getString("firstname"));
+                    patient.setPatronymic(resultSet.getString("patronymic"));
+                    patient.setJob(resultSet.getString("job"));
+                    //TODO: add doctors and clinics
+                }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -76,12 +82,18 @@ public class PatientDaoImp implements IPatientDao {
     @Override
     public List<Patient> getAll() {
         try (Connection connection = source.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT lastname, firstname, patronymic, " +
-                    "birthday, job, doctors, clinics FROM patient");
+            PreparedStatement statement = connection.prepareStatement("SELECT id, lastname, firstname, patronymic, " +
+                    "job FROM patient");
             ResultSet resultSet = statement.executeQuery();
             List<Patient> patients = new ArrayList<>();
             while (resultSet.next()) {
-                Patient patient = createPatient(resultSet);
+                Patient patient = new Patient();
+                patient.setId(resultSet.getLong("id"));
+                patient.setLastName(resultSet.getString("lastname"));
+                patient.setFirstName(resultSet.getString("firstname"));
+                patient.setPatronymic(resultSet.getString("patronymic"));
+                patient.setJob(resultSet.getString("job"));
+                //TODO: add doctors and clinics
                 patients.add(patient);
             }
             return patients;
@@ -98,16 +110,13 @@ public class PatientDaoImp implements IPatientDao {
     public void update(Patient patient) {
         try (Connection connection = source.getConnection()) {
             PreparedStatement statement = connection.prepareStatement("UPDATE patient SET lastname = ?, firstname = ?, " +
-                    "patronymic = ?, birthday = ?, job = ?, doctors = ?, clinics = ?) WHERE id = ?");
+                    "patronymic = ?, job = ? WHERE id = ?");
             statement.setString(1, patient.getLastName());
             statement.setString(2, patient.getFirstName());
             statement.setString(3, patient.getPatronymic());
-            statement.setDate(4, (Date) patient.getBirthday());
-            statement.setString(5, patient.getJob());
-            //TODO: add doctors and clinics
-            statement.setString(6, null);
-            statement.setString(7, null);
-            statement.setLong(8, patient.getId());
+            statement.setString(4, patient.getJob());
+            //TODO: add doctors and clinicsstn
+            statement.setLong(5, patient.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -129,25 +138,5 @@ public class PatientDaoImp implements IPatientDao {
             throw new RuntimeException(e);
         }
         return false;
-    }
-
-    /**
-     * The method creates the Patient entity from ResultSet and returns it.
-     * @param resultSet the entity ResultSet.
-     * @return the entity Patient.
-     * @throws SQLException
-     */
-    private Patient createPatient(ResultSet resultSet) throws SQLException {
-        Patient patient = new Patient();
-        patient.setId(resultSet.getLong("id"));
-        patient.setLastName(resultSet.getString("lastname"));
-        patient.setFirstName(resultSet.getString("firstname"));
-        patient.setPatronymic(resultSet.getString("patronymic"));
-        patient.setBirthday(resultSet.getDate("birthday"));
-        patient.setJob(resultSet.getString("job"));
-        //TODO: add doctors and clinics
-        patient.setDoctors(null);
-        patient.setClinics(null);
-        return patient;
     }
 }

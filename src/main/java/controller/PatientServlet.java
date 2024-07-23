@@ -1,6 +1,7 @@
 package controller;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dao.PatientDaoImp;
 import dto.PatientDTO;
 import jakarta.servlet.ServletException;
@@ -25,6 +26,7 @@ public class PatientServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private PatientService patientService;
     private final Gson gson = new Gson();
+    private final GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("MM/dd/yyyy");
 
     /**
      * The method is necessary to initialize this server and obtain a dependency on the server.
@@ -75,13 +77,12 @@ public class PatientServlet extends HttpServlet {
         while ((line = reader.readLine()) != null) {
             stringBuilder.append(line);
         }
-        PatientDTO patientDTO =  gson.fromJson(stringBuilder.toString(), PatientDTO.class);
+        PatientDTO patientDTO = gson.fromJson(stringBuilder.toString(), PatientDTO.class);
         try {
-            if (patientDTO.getLastName() == null || patientDTO.getLastName().isEmpty() || patientDTO.getFirstName() == null
-                    || patientDTO.getFirstName().isEmpty() || patientDTO.getPatronymic() == null
-                    || patientDTO.getPatronymic().isEmpty() || patientDTO.getBirthday() == null
-                    || patientDTO.getDoctors() == null || patientDTO.getDoctors().isEmpty()
-                    || patientDTO.getClinics() == null || patientDTO.getClinics().isEmpty()) {
+            if (patientDTO.getLastName() == null || patientDTO.getLastName().isEmpty()
+                    || patientDTO.getFirstName() == null || patientDTO.getFirstName().isEmpty()
+                    || patientDTO.getPatronymic() == null || patientDTO.getPatronymic().isEmpty()
+                    || patientDTO.getJob() == null || patientDTO.getJob().isEmpty()) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "All fields must be filled in.");
                 return;
             }
@@ -112,11 +113,10 @@ public class PatientServlet extends HttpServlet {
             }
             PatientDTO patientDTO = gson.fromJson(sb.toString(), PatientDTO.class);
             patientDTO.setId(id);
-            if (patientDTO.getLastName() == null || patientDTO.getLastName().isEmpty() || patientDTO.getFirstName() == null
-                    || patientDTO.getFirstName().isEmpty() || patientDTO.getPatronymic() == null
-                    || patientDTO.getPatronymic().isEmpty() || patientDTO.getBirthday() == null
-                    || patientDTO.getDoctors() == null || patientDTO.getDoctors().isEmpty()
-                    || patientDTO.getClinics() == null || patientDTO.getClinics().isEmpty()) {
+            if (patientDTO.getLastName() == null || patientDTO.getLastName().isEmpty()
+                    || patientDTO.getFirstName() == null || patientDTO.getFirstName().isEmpty()
+                    || patientDTO.getPatronymic() == null || patientDTO.getPatronymic().isEmpty()
+                    || patientDTO.getJob() == null || patientDTO.getJob().isEmpty()) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "All fields must be filled in.");
                 return;
             }

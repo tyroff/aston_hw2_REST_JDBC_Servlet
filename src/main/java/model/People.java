@@ -6,7 +6,6 @@ import java.util.Objects;
 public abstract class People {
     private Long id;
     private String lastName, firstName, patronymic;
-    private Date birthday;
 
     public Long getId() {
         return id;
@@ -40,25 +39,17 @@ public abstract class People {
         this.patronymic = patronymic;
     }
 
-    public Date getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(Date birthday) {
-        this.birthday = birthday;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         People people = (People) o;
-        return id == people.id && Objects.equals(lastName, people.lastName) && Objects.equals(firstName, people.firstName) && Objects.equals(patronymic, people.patronymic) && Objects.equals(birthday, people.birthday);
+        return id == people.id && Objects.equals(lastName, people.lastName) && Objects.equals(firstName, people.firstName) && Objects.equals(patronymic, people.patronymic);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lastName, firstName, patronymic, birthday);
+        return Objects.hash(id, lastName, firstName, patronymic);
     }
 
     @Override
@@ -68,7 +59,6 @@ public abstract class People {
                 ", lastName='" + lastName + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", patronymic='" + patronymic + '\'' +
-                ", birthday=" + birthday +
                 '}';
     }
 }
