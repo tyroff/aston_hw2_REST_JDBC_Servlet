@@ -12,6 +12,8 @@ import service.PatientService;
 import util.DataPropertiesUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet("/patients/*")
 public class PatientServlet extends HttpServlet {
@@ -30,7 +32,8 @@ public class PatientServlet extends HttpServlet {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
             if (pathInfo == null || pathInfo.equals("/")) {
-                //TODO: allPatient;
+                String patientJson = gson.toJson(patientService.getAll());
+                resp.getWriter().write(patientJson);
             } else {
                 Long id = Long.parseLong(pathInfo.split("/")[1]);
                 PatientDTO patientDTO = patientService.getById(id);
