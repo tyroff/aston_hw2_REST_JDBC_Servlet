@@ -33,7 +33,7 @@ public class PatientServlet extends HttpServlet {
                 //TODO: allPatient;
             } else {
                 Long id = Long.parseLong(pathInfo.split("/")[1]);
-                PatientDTO patientDTO = patientService.getPatientById(id);
+                PatientDTO patientDTO = patientService.getById(id);
                 String patientJson = gson.toJson(patientDTO);
                 resp.getWriter().write(patientJson);
             }
