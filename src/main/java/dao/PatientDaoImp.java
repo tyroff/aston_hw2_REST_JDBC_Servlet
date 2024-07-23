@@ -12,10 +12,19 @@ import java.util.List;
 public class PatientDaoImp implements IPatientDao {
     private final DataSource source;
 
+    /**
+     * Constructor with the entity parameter DataSource.
+     * @param source entity parameter DataSource.
+     */
     public PatientDaoImp(DataSource source) {
         this.source = source;
     }
 
+    /**
+     * The saves in the database the entity Patient.
+     * @param patient the entity Patient.
+     * @throws SQLException
+     */
     @Override
     public void save(Patient patient) throws SQLException {
         if (patient != null) {
@@ -36,6 +45,11 @@ public class PatientDaoImp implements IPatientDao {
         }
     }
 
+    /**
+     * Returns one entity Patient by id otherwise null.
+     * @param id id entity Patient.
+     * @return
+     */
     @Override
     public Patient getById(Long id) {
         Patient patient = null;
@@ -55,6 +69,10 @@ public class PatientDaoImp implements IPatientDao {
         return patient;
     }
 
+    /**
+     * Returns a list of all entity Patient otherwise null.
+     * @return List<Patient>
+     */
     @Override
     public List<Patient> getAll() {
         try (Connection connection = source.getConnection()) {
@@ -72,6 +90,10 @@ public class PatientDaoImp implements IPatientDao {
         }
     }
 
+    /**
+     * The method changes the entity Patient in the database.
+     * @param patient entity Patient.
+     */
     @Override
     public void update(Patient patient) {
         try (Connection connection = source.getConnection()) {
@@ -92,6 +114,11 @@ public class PatientDaoImp implements IPatientDao {
         }
     }
 
+    /**
+     * The method removes the id Patient entity in the database.
+     * @param id id entity Patient.
+     * @return  true if the id Patient entity was deleted from the database otherwise false.
+     */
     @Override
     public boolean deleteById(Long id) {
         try (Connection connection = source.getConnection()) {
@@ -104,6 +131,12 @@ public class PatientDaoImp implements IPatientDao {
         return false;
     }
 
+    /**
+     * The method creates the Patient entity from ResultSet and returns it.
+     * @param resultSet the entity ResultSet.
+     * @return the entity Patient.
+     * @throws SQLException
+     */
     private Patient createPatient(ResultSet resultSet) throws SQLException {
         Patient patient = new Patient();
         patient.setId(resultSet.getLong("id"));
