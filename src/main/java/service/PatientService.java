@@ -72,7 +72,7 @@ public class PatientService {
      * @param id the id Patient entity
      * @return true if the id Patient entity was deleted from the database otherwise false.
      */
-    private Boolean deleteById(Long id) {
+    public Boolean deleteById(Long id) {
         return patientDaoImp.deleteById(id);
     }
 }

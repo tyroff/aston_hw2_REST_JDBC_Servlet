@@ -129,8 +129,29 @@ public class PatientServlet extends HttpServlet {
         }
     }
 
+    /**
+     * This method receives the ID of the Patient entity from the server and passes it to the service to remove it from the database.
+     * @param req request.
+     * @param resp response.
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doDelete(req, resp);
+        String pathInfo = req.getPathInfo();
+        try {
+            if (pathInfo == null || pathInfo.equals("/")) {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Need patient ID for deleting.");
+            } else {
+                Long id = Long.parseLong(pathInfo.split("/")[1]);
+                if (patientService.deleteById(id)) {
+                    resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                }
+            }
+        } catch (NumberFormatException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid patient ID.");
+        }
     }
 }
