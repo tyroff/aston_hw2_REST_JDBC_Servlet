@@ -56,6 +56,16 @@ public class PatientService {
         Patient patient = PatientMapper.INSTANCE.DTOtoPatient(patientDTO);
         patientDaoImp.save(patient);
     }
+
+    /**
+     * The method receives from the controller the entity PatientDTO and changes the entity Patient in the database.
+     * @param patientDTO the entity PatientDTO.
+     * @throws SQLException
+     */
+    public void update(PatientDTO patientDTO) throws SQLException {
+        Patient patient = PatientMapper.INSTANCE.DTOtoPatient(patientDTO);
+        patientDaoImp.update(patient);
+    }
 }
 
 /*
