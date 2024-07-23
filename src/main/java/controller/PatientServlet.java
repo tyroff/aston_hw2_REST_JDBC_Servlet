@@ -92,9 +92,41 @@ public class PatientServlet extends HttpServlet {
         }
     }
 
+    /**
+     * This method receives data from the Patient entity and transfers it to the service for updating in the database.
+     * @param req request.
+     * @param resp response.
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPut(req, resp);
+        String pathInfo = req.getPathInfo();
+        try {
+            Long id = Long.parseLong(pathInfo.split("/")[1]);
+            StringBuilder sb = new StringBuilder();
+            BufferedReader reader = req.getReader();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            PatientDTO patientDTO = gson.fromJson(sb.toString(), PatientDTO.class);
+            patientDTO.setId(id);
+            if (patientDTO.getLastName() == null || patientDTO.getLastName().isEmpty() || patientDTO.getFirstName() == null
+                    || patientDTO.getFirstName().isEmpty() || patientDTO.getPatronymic() == null
+                    || patientDTO.getPatronymic().isEmpty() || patientDTO.getBirthday() == null
+                    || patientDTO.getDoctors() == null || patientDTO.getDoctors().isEmpty()
+                    || patientDTO.getClinics() == null || patientDTO.getClinics().isEmpty()) {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "All fields must be filled in.");
+                return;
+            }
+            patientService.update(patientDTO);
+            resp.setStatus(HttpServletResponse.SC_CREATED);
+        } catch (SQLException e) {
+            throw new ServletException(e);
+        } catch (NumberFormatException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid patient ID.");
+        }
     }
 
     @Override
