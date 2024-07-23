@@ -20,8 +20,8 @@ public class PatientDaoImp implements IPatientDao {
     public void save(Patient patient) throws SQLException {
         if (patient != null) {
             try(Connection connection = source.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement(
-                        "INSERT INTO patient (lastname, firstname, patronymic, birthday, job, doctors, clinics) " +
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO patient (lastname, firstname, " +
+                        "patronymic, birthday, job, doctors, clinics) " +
                                 "VALUES (?,?,?,?,?,?,?)");
                 //TODO: add doctors and clinics
                 statement.setString(1, patient.getLastName());
@@ -31,6 +31,7 @@ public class PatientDaoImp implements IPatientDao {
                 statement.setString(5, patient.getJob());
                 statement.setString(6, null);
                 statement.setString(7, null);
+                statement.executeUpdate();
             }
         }
     }
@@ -57,8 +58,8 @@ public class PatientDaoImp implements IPatientDao {
     @Override
     public List<Patient> getAll() {
         try (Connection connection = source.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(
-                    "SELECT lastname, firstname, patronymic, birthday, job, doctors, clinics FROM patient");
+            PreparedStatement statement = connection.prepareStatement("SELECT lastname, firstname, patronymic, " +
+                    "birthday, job, doctors, clinics FROM patient");
             ResultSet resultSet = statement.executeQuery();
             List<Patient> patients = new ArrayList<>();
             while (resultSet.next()) {
@@ -72,8 +73,22 @@ public class PatientDaoImp implements IPatientDao {
     }
 
     @Override
-    public void update(Patient c) {
-
+    public void update(Patient patient) {
+        try (Connection connection = source.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("UPDATE patient SET lastname = ?, firstname = ?, " +
+                    "patronymic = ?, birthday = ?, job = ?, doctors = ?, clinics = ?) WHERE id = ?");
+            statement.setString(1, patient.getLastName());
+            statement.setString(2, patient.getFirstName());
+            statement.setString(3, patient.getPatronymic());
+            statement.setDate(4, (Date) patient.getBirthday());
+            statement.setString(5, patient.getJob());
+            statement.setString(6, null);
+            statement.setString(7, null);
+            statement.setLong(8, patient.getId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
