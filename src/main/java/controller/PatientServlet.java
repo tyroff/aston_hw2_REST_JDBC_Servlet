@@ -11,20 +11,35 @@ import jakarta.servlet.http.HttpServletResponse;
 import service.PatientService;
 import util.DataPropertiesUtil;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class receives data from the server, sends requests to the server and sends the result back to the server.
+ */
 @WebServlet("/patients/*")
 public class PatientServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private PatientService patientService;
     private final Gson gson = new Gson();
+
+    /**
+     * The method is necessary to initialize this server and obtain a dependency on the server.
+     */
     @Override
     public void init() {
         this.patientService = new PatientService(new PatientDaoImp(DataPropertiesUtil.getDataSource()));
     }
 
+    /**
+     * The method is necessary to obtain data on the ID of one Patient or all.
+     * @param req request.
+     * @param resp response.
+     * @throws IOException
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo();
@@ -45,9 +60,36 @@ public class PatientServlet extends HttpServlet {
         }
     }
 
+    /**
+     * This method receives data from the Patient entity and transfers it to the service for saving in the database.
+     * @param req request.
+     * @param resp response.
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+        StringBuilder stringBuilder = new StringBuilder();
+        BufferedReader reader = req.getReader();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line);
+        }
+        PatientDTO patientDTO =  gson.fromJson(stringBuilder.toString(), PatientDTO.class);
+        try {
+            if (patientDTO.getLastName() == null || patientDTO.getLastName().isEmpty() || patientDTO.getFirstName() == null
+                    || patientDTO.getFirstName().isEmpty() || patientDTO.getPatronymic() == null
+                    || patientDTO.getPatronymic().isEmpty() || patientDTO.getBirthday() == null
+                    || patientDTO.getDoctors() == null || patientDTO.getDoctors().isEmpty()
+                    || patientDTO.getClinics() == null || patientDTO.getClinics().isEmpty()) {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "All fields must be filled in.");
+                return;
+            }
+            patientService.save(patientDTO);
+            resp.setStatus(HttpServletResponse.SC_CREATED);
+        } catch (SQLException e) {
+            throw new ServletException(e);
+        }
     }
 
     @Override
