@@ -82,6 +82,7 @@ public class PatientDaoImp implements IPatientDao {
             statement.setString(3, patient.getPatronymic());
             statement.setDate(4, (Date) patient.getBirthday());
             statement.setString(5, patient.getJob());
+            //TODO: add doctors and clinics
             statement.setString(6, null);
             statement.setString(7, null);
             statement.setLong(8, patient.getId());
@@ -93,6 +94,13 @@ public class PatientDaoImp implements IPatientDao {
 
     @Override
     public boolean deleteById(Long id) {
+        try (Connection connection = source.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM patient WHERE id = ?");
+            statement.setLong(1, id);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return false;
     }
 
