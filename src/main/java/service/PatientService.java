@@ -5,6 +5,7 @@ import dto.PatientDTO;
 import mapper.PatientMapper;
 import model.Patient;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,10 +46,19 @@ public class PatientService {
                 .collect(Collectors.toList());
         return patientDTOs;
     }
+
+    /**
+     * The method receives from the controller the entity PatientDTO and saves in the database the entity Patient.
+     * @param patientDTO the entity PatientDTO.
+     * @throws SQLException
+     */
+    public void save(PatientDTO patientDTO) throws SQLException {
+        Patient patient = PatientMapper.INSTANCE.DTOtoPatient(patientDTO);
+        patientDaoImp.save(patient);
+    }
 }
 
 /*
         patientDaoImp.deleteById();
-        patientDaoImp.save();
         patientDaoImp.update();
  */
