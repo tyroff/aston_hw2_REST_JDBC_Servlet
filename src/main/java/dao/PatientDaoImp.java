@@ -5,10 +5,7 @@ import model.Doctor;
 import model.Patient;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 public class PatientDaoImp implements IPatientDao {
@@ -20,6 +17,21 @@ public class PatientDaoImp implements IPatientDao {
 
     @Override
     public void save(Patient patient) throws SQLException {
+        if (patient != null) {
+            try(Connection connection = source.getConnection()) {
+                PreparedStatement statement = connection.prepareStatement(
+                        "INSERT INTO patient (lastname, firstname, patronymic, birthday, job, doctors, clinics)\n" +
+                                "VALUES (?,?,?,?,?,?,?)");
+                //TODO: add doctors and clinics
+                statement.setString(1, patient.getLastName());
+                statement.setString(2, patient.getFirstName());
+                statement.setString(3, patient.getPatronymic());
+                statement.setDate(4, (Date) patient.getBirthday());
+                statement.setString(5, patient.getJob());
+                statement.setString(6, null);
+                statement.setString(7, null);
+            }
+        }
     }
 
     @Override
@@ -53,17 +65,6 @@ public class PatientDaoImp implements IPatientDao {
         }
         return patient;
     }
-
-
-/*
-    private int id;
-    private String lastName, firstName, patronymic;
-    private Date birthday;
-    private String job;
-    private List<Doctor> doctors;
-    private List<Clinic> clinics;
- */
-
 
     @Override
     public List<Patient> getAll() {
