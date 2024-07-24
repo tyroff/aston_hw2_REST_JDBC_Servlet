@@ -30,8 +30,8 @@ public class Patient extends People {
 
     @Override
     public String toString() {
-        return "Patient{" +
-                "job='" + job + '\'' +
-                '}';
+        return "Patient" + super.toString() +
+                ", job='" + job + '\'' +
+                "} ";
     }
 }
