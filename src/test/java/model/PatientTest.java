@@ -13,29 +13,29 @@ class PatientTest extends People {
     String toStringPatient = "Patient{id=null, lastName='null', firstName='null', patronymic='null', job='null'} ";
 
     @Test
-    void getJob() {
+    void getJobTest() {
         patientTest.setJob("Job");
         assertEquals(patientTest.getJob(), "Job");
     }
 
     @Test
-    void setJob() {
+    void setJobTest() {
         patientTest.setJob("Job");
         assertEquals(patientTest.getJob(), "Job");
     }
 
     @Test
-    void testEquals() {
+    void testEqualsTest() {
         assertTrue(patient.equals(patientEquals));
     }
 
     @Test
-    void testHashCode() {
+    void testHashCodeTest() {
         assertEquals(patient.hashCode(), hashCodePatient);
     }
 
     @Test
-    void testToString() {
+    void testToStringTest() {
         assertEquals(patient.toString(), toStringPatient);
     }
 }

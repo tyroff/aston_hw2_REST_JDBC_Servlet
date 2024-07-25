@@ -3,10 +3,7 @@ package dao;
 import model.Patient;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,13 +29,18 @@ public class PatientDaoImp implements IPatientDao {
             try(Connection connection = source.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement("INSERT INTO patient (lastname, firstname, " +
                         "patronymic, job) " +
-                                "VALUES (?,?,?,?)");
+                                "VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
                 //TODO: add doctors and clinics
                 statement.setString(1, patient.getLastName());
                 statement.setString(2, patient.getFirstName());
                 statement.setString(3, patient.getPatronymic());
                 statement.setString(4, patient.getJob());
                 statement.executeUpdate();
+
+                ResultSet resultSet = statement.getGeneratedKeys();
+                if(resultSet.next()) {
+                    patient.setId((resultSet.getLong(1)));
+                }
             }
         }
     }
