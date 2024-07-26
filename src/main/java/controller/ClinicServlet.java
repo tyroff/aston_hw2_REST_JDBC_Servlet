@@ -1,16 +1,19 @@
 package controller;
 
 import com.google.gson.Gson;
+import dao.ClinicDaoImp;
 import dao.DoctorDaoImp;
-import dto.DoctorDTO;
+import dao.PatientDaoImp;
+import dto.ClinicDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import service.DoctorService;
+import service.ClinicService;
 import util.DataPropertiesUtil;
 
+import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -18,10 +21,10 @@ import java.sql.SQLException;
 /**
  * This class receives data from the server, sends requests to the server and sends the result back to the server.
  */
-@WebServlet("/doctors/*")
-public class DoctorServlet extends HttpServlet {
+@WebServlet("/clinics/*")
+public class ClinicServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private DoctorService doctorService;
+    private ClinicService clinicService;
     private final Gson gson = new Gson();
 
     /**
@@ -29,11 +32,12 @@ public class DoctorServlet extends HttpServlet {
      */
     @Override
     public void init() {
-        this.doctorService = new DoctorService(new DoctorDaoImp(DataPropertiesUtil.getDataSource()));
+        DataSource source = DataPropertiesUtil.getDataSource();
+        this.clinicService = new ClinicService(new ClinicDaoImp(source, new DoctorDaoImp(source), new PatientDaoImp(source)), new DoctorDaoImp(source), new PatientDaoImp(source));
     }
 
     /**
-     * The method is necessary to obtain data on the ID of one Doctor or all.
+     * The method is necessary to obtain data on the ID of one Clinic or all.
      * @param req request.
      * @param resp response.
      */
@@ -44,13 +48,13 @@ public class DoctorServlet extends HttpServlet {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
             if (pathInfo == null || pathInfo.equals("/")) {
-                String doctorJson = gson.toJson(doctorService.getAll());
-                resp.getWriter().write(doctorJson);
+                String clinicJson = gson.toJson(clinicService.getAll());
+                resp.getWriter().write(clinicJson);
             } else {
                 Long id = Long.parseLong(pathInfo.split("/")[1]);
-                DoctorDTO doctorDTO = doctorService.getById(id);
-                String doctorJson = gson.toJson(doctorDTO);
-                resp.getWriter().write(doctorJson);
+                ClinicDTO clinicDTO = clinicService.getById(id);
+                String clinicJson = gson.toJson(clinicDTO);
+                resp.getWriter().write(clinicJson);
             }
         } catch (NumberFormatException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid patient ID format.");
@@ -58,7 +62,7 @@ public class DoctorServlet extends HttpServlet {
     }
 
     /**
-     * This method receives data from the Doctor entity and transfers it to the service for saving in the database.
+     * This method receives data from the Clinic entity and transfers it to the service for saving in the database.
      * @param req request.
      * @param resp response.
      */
@@ -70,16 +74,17 @@ public class DoctorServlet extends HttpServlet {
         while ((line = reader.readLine()) != null) {
             stringBuilder.append(line);
         }
-        DoctorDTO doctorDTO = gson.fromJson(stringBuilder.toString(), DoctorDTO.class);
+        ClinicDTO clinicDTO = gson.fromJson(stringBuilder.toString(), ClinicDTO.class);
         try {
-            if (doctorDTO.getLastName() == null || doctorDTO.getLastName().isEmpty()
-                    || doctorDTO.getFirstName() == null || doctorDTO.getFirstName().isEmpty()
-                    || doctorDTO.getPatronymic() == null || doctorDTO.getPatronymic().isEmpty()
-                    || doctorDTO.getSpecialization() == null || doctorDTO.getSpecialization().isEmpty()) {
+            if (clinicDTO.getName() == null || clinicDTO.getName().isEmpty()
+                    || clinicDTO.getAddress() == null || clinicDTO.getAddress().isEmpty()
+                    || clinicDTO.getType() == null || clinicDTO.getType().isEmpty()
+                    || clinicDTO.getDoctors() == null || clinicDTO.getDoctors().isEmpty()
+                    || clinicDTO.getPatients() == null || clinicDTO.getPatients().isEmpty()) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "All fields must be filled in.");
                 return;
             }
-            doctorService.save(doctorDTO);
+            clinicService.save(clinicDTO);
             resp.setStatus(HttpServletResponse.SC_CREATED);
         } catch (SQLException e) {
             throw new ServletException(e);
@@ -87,7 +92,7 @@ public class DoctorServlet extends HttpServlet {
     }
 
     /**
-     * This method receives data from the Doctor entity and transfers it to the service for updating in the database.
+     * This method receives data from the Clinic entity and transfers it to the service for updating in the database.
      * @param req request.
      * @param resp response.
      */
@@ -102,16 +107,17 @@ public class DoctorServlet extends HttpServlet {
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
             }
-            DoctorDTO doctorDTO = gson.fromJson(sb.toString(), DoctorDTO.class);
-            doctorDTO.setId(id);
-            if (doctorDTO.getLastName() == null || doctorDTO.getLastName().isEmpty()
-                    || doctorDTO.getFirstName() == null || doctorDTO.getFirstName().isEmpty()
-                    || doctorDTO.getPatronymic() == null || doctorDTO.getPatronymic().isEmpty()
-                    || doctorDTO.getSpecialization() == null || doctorDTO.getSpecialization().isEmpty()) {
+            ClinicDTO clinicDTO = gson.fromJson(sb.toString(), ClinicDTO.class);
+            clinicDTO.setId(id);
+            if (clinicDTO.getName() == null || clinicDTO.getName().isEmpty()
+                    || clinicDTO.getAddress() == null || clinicDTO.getAddress().isEmpty()
+                    || clinicDTO.getType() == null || clinicDTO.getType().isEmpty()
+                    || clinicDTO.getDoctors() == null || clinicDTO.getDoctors().isEmpty()
+                    || clinicDTO.getPatients() == null || clinicDTO.getPatients().isEmpty()) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "All fields must be filled in.");
                 return;
             }
-            doctorService.update(doctorDTO);
+            clinicService.update(clinicDTO);
             resp.setStatus(HttpServletResponse.SC_CREATED);
         } catch (SQLException e) {
             throw new ServletException(e);
@@ -121,7 +127,7 @@ public class DoctorServlet extends HttpServlet {
     }
 
     /**
-     * This method receives the ID of the Doctor entity from the server and passes it to the service to remove it from the database.
+     * This method receives the ID of the Clinic entity from the server and passes it to the service to remove it from the database.
      * @param req request.
      * @param resp response.
      */
@@ -133,7 +139,7 @@ public class DoctorServlet extends HttpServlet {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Need patient ID for deleting.");
             } else {
                 Long id = Long.parseLong(pathInfo.split("/")[1]);
-                if (doctorService.deleteById(id)) {
+                if (clinicService.deleteById(id)) {
                     resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

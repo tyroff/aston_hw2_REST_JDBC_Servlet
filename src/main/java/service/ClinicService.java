@@ -1,6 +1,8 @@
 package service;
 
 import dao.ClinicDaoImp;
+import dao.DoctorDaoImp;
+import dao.PatientDaoImp;
 import dto.ClinicDTO;
 import mapper.ClinicMapper;
 import model.Clinic;
@@ -14,13 +16,20 @@ import java.util.stream.Collectors;
  */
 public class ClinicService {
     private final ClinicDaoImp clinicDaoImp;
+    private final DoctorDaoImp doctorDaoImp;
+    private final PatientDaoImp patientDaoImp;
 
     /**
      * Constructor with the entity parameter ClinicDaoImp.
-     * @param clinicDaoImp entity parameter ClinicDaoImp.
+     *
+     * @param clinicDaoImp  entity parameter ClinicDaoImp.
+     * @param doctorDaoImp entity parameter DoctorDaoImp.
+     * @param patientDaoImp entity parameter PatientDaoImp.
      */
-    public ClinicService(ClinicDaoImp clinicDaoImp) {
+    public ClinicService(ClinicDaoImp clinicDaoImp, DoctorDaoImp doctorDaoImp, PatientDaoImp patientDaoImp) {
         this.clinicDaoImp = clinicDaoImp;
+        this.doctorDaoImp = doctorDaoImp;
+        this.patientDaoImp = patientDaoImp;
     }
 
 

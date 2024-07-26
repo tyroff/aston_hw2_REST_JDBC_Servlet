@@ -139,14 +139,7 @@ public class ClinicDaoImp implements IClinicDao {
             throw new RuntimeException(e);
         }
     }
-    /*
-        private Long id;
-        private String name;
-        private String address;
-        private String type;
-        private List<Doctor> doctors;
-        private List<Patient> patients;
-     */
+
     /**
      * The method changes the entity Clinic in the database.
      * @param clinic entity Clinic.
