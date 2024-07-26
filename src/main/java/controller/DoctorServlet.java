@@ -1,14 +1,14 @@
 package controller;
 
 import com.google.gson.Gson;
-import dao.PatientDaoImp;
-import dto.PatientDTO;
+import dao.DoctorDaoImp;
+import dto.DoctorDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import service.PatientService;
+import service.DoctorService;
 import util.DataPropertiesUtil;
 
 import java.io.BufferedReader;
@@ -19,9 +19,9 @@ import java.sql.SQLException;
  * This class receives data from the server, sends requests to the server and sends the result back to the server.
  */
 @WebServlet("/patients/*")
-public class PatientServlet extends HttpServlet {
+public class DoctorServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private PatientService patientService;
+    private DoctorService doctorService;
     private final Gson gson = new Gson();
 
     /**
@@ -29,14 +29,13 @@ public class PatientServlet extends HttpServlet {
      */
     @Override
     public void init() {
-        this.patientService = new PatientService(new PatientDaoImp(DataPropertiesUtil.getDataSource()));
+        this.doctorService = new DoctorService(new DoctorDaoImp(DataPropertiesUtil.getDataSource()));
     }
 
     /**
-     * The method is necessary to obtain data on the ID of one Patient or all.
+     * The method is necessary to obtain data on the ID of one Doctor or all.
      * @param req request.
      * @param resp response.
-     * @throws IOException
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -45,13 +44,13 @@ public class PatientServlet extends HttpServlet {
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
             if (pathInfo == null || pathInfo.equals("/")) {
-                String patientJson = gson.toJson(patientService.getAll());
-                resp.getWriter().write(patientJson);
+                String doctorJson = gson.toJson(doctorService.getAll());
+                resp.getWriter().write(doctorJson);
             } else {
                 Long id = Long.parseLong(pathInfo.split("/")[1]);
-                PatientDTO patientDTO = patientService.getById(id);
-                String patientJson = gson.toJson(patientDTO);
-                resp.getWriter().write(patientJson);
+                DoctorDTO doctorDTO = doctorService.getById(id);
+                String doctorJson = gson.toJson(doctorDTO);
+                resp.getWriter().write(doctorJson);
             }
         } catch (NumberFormatException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid patient ID format.");
@@ -59,11 +58,9 @@ public class PatientServlet extends HttpServlet {
     }
 
     /**
-     * This method receives data from the Patient entity and transfers it to the service for saving in the database.
+     * This method receives data from the Doctor entity and transfers it to the service for saving in the database.
      * @param req request.
      * @param resp response.
-     * @throws ServletException
-     * @throws IOException
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -73,16 +70,16 @@ public class PatientServlet extends HttpServlet {
         while ((line = reader.readLine()) != null) {
             stringBuilder.append(line);
         }
-        PatientDTO patientDTO = gson.fromJson(stringBuilder.toString(), PatientDTO.class);
+        DoctorDTO doctorDTO = gson.fromJson(stringBuilder.toString(), DoctorDTO.class);
         try {
-            if (patientDTO.getLastName() == null || patientDTO.getLastName().isEmpty()
-                    || patientDTO.getFirstName() == null || patientDTO.getFirstName().isEmpty()
-                    || patientDTO.getPatronymic() == null || patientDTO.getPatronymic().isEmpty()
-                    || patientDTO.getJob() == null || patientDTO.getJob().isEmpty()) {
+            if (doctorDTO.getLastName() == null || doctorDTO.getLastName().isEmpty()
+                    || doctorDTO.getFirstName() == null || doctorDTO.getFirstName().isEmpty()
+                    || doctorDTO.getPatronymic() == null || doctorDTO.getPatronymic().isEmpty()
+                    || doctorDTO.getSpecialization() == null || doctorDTO.getSpecialization().isEmpty()) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "All fields must be filled in.");
                 return;
             }
-            patientService.save(patientDTO);
+            doctorService.save(doctorDTO);
             resp.setStatus(HttpServletResponse.SC_CREATED);
         } catch (SQLException e) {
             throw new ServletException(e);
@@ -90,11 +87,9 @@ public class PatientServlet extends HttpServlet {
     }
 
     /**
-     * This method receives data from the Patient entity and transfers it to the service for updating in the database.
+     * This method receives data from the Doctor entity and transfers it to the service for updating in the database.
      * @param req request.
      * @param resp response.
-     * @throws ServletException
-     * @throws IOException
      */
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -107,16 +102,16 @@ public class PatientServlet extends HttpServlet {
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
             }
-            PatientDTO patientDTO = gson.fromJson(sb.toString(), PatientDTO.class);
-            patientDTO.setId(id);
-            if (patientDTO.getLastName() == null || patientDTO.getLastName().isEmpty()
-                    || patientDTO.getFirstName() == null || patientDTO.getFirstName().isEmpty()
-                    || patientDTO.getPatronymic() == null || patientDTO.getPatronymic().isEmpty()
-                    || patientDTO.getJob() == null || patientDTO.getJob().isEmpty()) {
+            DoctorDTO doctorDTO = gson.fromJson(sb.toString(), DoctorDTO.class);
+            doctorDTO.setId(id);
+            if (doctorDTO.getLastName() == null || doctorDTO.getLastName().isEmpty()
+                    || doctorDTO.getFirstName() == null || doctorDTO.getFirstName().isEmpty()
+                    || doctorDTO.getPatronymic() == null || doctorDTO.getPatronymic().isEmpty()
+                    || doctorDTO.getSpecialization() == null || doctorDTO.getSpecialization().isEmpty()) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "All fields must be filled in.");
                 return;
             }
-            patientService.update(patientDTO);
+            doctorService.update(doctorDTO);
             resp.setStatus(HttpServletResponse.SC_CREATED);
         } catch (SQLException e) {
             throw new ServletException(e);
@@ -126,21 +121,19 @@ public class PatientServlet extends HttpServlet {
     }
 
     /**
-     * This method receives the ID of the Patient entity from the server and passes it to the service to remove it from the database.
+     * This method receives the ID of the Doctor entity from the server and passes it to the service to remove it from the database.
      * @param req request.
      * @param resp response.
-     * @throws ServletException
-     * @throws IOException
      */
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo();
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Need patient ID for deleting.");
             } else {
                 Long id = Long.parseLong(pathInfo.split("/")[1]);
-                if (patientService.deleteById(id)) {
+                if (doctorService.deleteById(id)) {
                     resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 } else {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
