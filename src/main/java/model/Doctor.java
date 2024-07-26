@@ -48,10 +48,10 @@ public class Doctor extends People{
 
     @Override
     public String toString() {
-        return "Doctor{" +
+        return "Doctor" + super.toString() +
                 "specialization='" + specialization + '\'' +
                 ", clinic=" + clinic +
                 ", patients=" + patients +
-                '}';
+                "}";
     }
 }
