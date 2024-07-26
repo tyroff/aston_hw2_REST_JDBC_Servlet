@@ -39,8 +39,8 @@ public class DoctorService {
      * @return List<DoctorDTO>
      */
     public List<DoctorDTO> getAll() {
-        List<Doctor> patients = doctorDaoImp.getAll();
-        List<DoctorDTO> doctorDTOs = patients
+        List<Doctor> doctors = doctorDaoImp.getAll();
+        List<DoctorDTO> doctorDTOs = doctors
                 .stream()
                 .map(DoctorMapper.INSTANCE::doctorToDTO)
                 .collect(Collectors.toList());
@@ -50,7 +50,6 @@ public class DoctorService {
     /**
      * The method receives from the controller the entity DoctorDTO and saves in the database the entity Doctor.
      * @param doctorDTO the entity DoctorDTO.
-     * @throws SQLException
      */
     public void save(DoctorDTO doctorDTO) throws SQLException {
         Doctor doctor = DoctorMapper.INSTANCE.DTOtoDoctor(doctorDTO);
@@ -59,11 +58,10 @@ public class DoctorService {
 
     /**
      * The method receives from the controller the entity DoctorDTO and changes the entity Doctor in the database.
-     * @param patientDTO the entity DoctorDTO.
-     * @throws SQLException
+     * @param doctorDTO the entity DoctorDTO.
      */
-    public void update(DoctorDTO patientDTO) throws SQLException {
-        Doctor doctor = DoctorMapper.INSTANCE.DTOtoDoctor(patientDTO);
+    public void update(DoctorDTO doctorDTO) throws SQLException {
+        Doctor doctor = DoctorMapper.INSTANCE.DTOtoDoctor(doctorDTO);
         doctorDaoImp.update(doctor);
     }
 
