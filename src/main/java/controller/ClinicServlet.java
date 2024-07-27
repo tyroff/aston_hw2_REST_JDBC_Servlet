@@ -1,9 +1,6 @@
 package controller;
 
 import com.google.gson.Gson;
-import dao.ClinicDaoImp;
-import dao.DoctorDaoImp;
-import dao.PatientDaoImp;
 import dto.ClinicDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,6 +13,7 @@ import util.DataPropertiesUtil;
 import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Serial;
 import java.sql.SQLException;
 
 /**
@@ -23,6 +21,7 @@ import java.sql.SQLException;
  */
 @WebServlet("/clinics/*")
 public class ClinicServlet extends HttpServlet {
+    @Serial
     private static final long serialVersionUID = 1L;
     private ClinicService clinicService;
     private final Gson gson = new Gson();
@@ -33,7 +32,7 @@ public class ClinicServlet extends HttpServlet {
     @Override
     public void init() {
         DataSource source = DataPropertiesUtil.getDataSource();
-        this.clinicService = new ClinicService(new ClinicDaoImp(source, new DoctorDaoImp(source), new PatientDaoImp(source)), new DoctorDaoImp(source), new PatientDaoImp(source));
+        this.clinicService = new ClinicService(source);
     }
 
     /**

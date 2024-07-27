@@ -1,6 +1,5 @@
 package model;
 
-import java.util.Date;
 import java.util.Objects;
 
 public abstract class People {

@@ -14,6 +14,7 @@ public final class DataPropertiesUtil {
     private static final String PROPERTIES_FILE = "db.properties";
     private static final HikariConfig config = new HikariConfig();
     private static final HikariDataSource ds;
+    public static DataSource getDataSource;
 
     static {
         try {

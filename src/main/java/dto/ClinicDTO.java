@@ -1,6 +1,5 @@
 package dto;
 
-import model.Clinic;
 import model.Doctor;
 import model.Patient;
 

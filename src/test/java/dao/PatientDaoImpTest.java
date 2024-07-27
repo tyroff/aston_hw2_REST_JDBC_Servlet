@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import util.DataPropertiesUtil;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +14,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PatientDaoImpTest {
     static PatientDaoImp patientDaoImp;
+    static DataSource source;
 
     @BeforeAll
     public static void setUp() {
-        patientDaoImp = new PatientDaoImp(DataPropertiesUtil.getDataSource());
+        source = DataPropertiesUtil.getDataSource;
+        patientDaoImp = new PatientDaoImp(source);
     }
 
     @Test

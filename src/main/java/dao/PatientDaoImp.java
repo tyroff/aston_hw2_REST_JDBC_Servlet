@@ -1,10 +1,14 @@
 package dao;
 
+import model.Clinic;
+import model.Doctor;
 import model.Patient;
+import model.People;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PatientDaoImp implements IPatientDao {
@@ -12,37 +16,11 @@ public class PatientDaoImp implements IPatientDao {
 
     /**
      * Constructor with the entity parameter DataSource.
-     * @param source entity parameter DataSource.
+     *
+     * @param source       entity parameter DataSource.
      */
     public PatientDaoImp(DataSource source) {
         this.source = source;
-    }
-
-    /**
-     * The saves in the database the entity Patient.
-     * @param patient the entity Patient.
-     * @throws SQLException
-     */
-    @Override
-    public void save(Patient patient) throws SQLException {
-        if (patient != null) {
-            try(Connection connection = source.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("INSERT INTO patient (lastname, firstname, " +
-                        "patronymic, job) " +
-                                "VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-                //TODO: add doctors and clinics
-                statement.setString(1, patient.getLastName());
-                statement.setString(2, patient.getFirstName());
-                statement.setString(3, patient.getPatronymic());
-                statement.setString(4, patient.getJob());
-                statement.executeUpdate();
-
-                ResultSet resultSet = statement.getGeneratedKeys();
-                if(resultSet.next()) {
-                    patient.setId((resultSet.getLong(1)));
-                }
-            }
-        }
     }
 
     /**
@@ -56,19 +34,75 @@ public class PatientDaoImp implements IPatientDao {
         if (id != null) {
             try(Connection connection = source.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement(
-                        "SELECT lastname, firstname, patronymic, job " +
+                        "SELECT lastname, firstname, patronymic, job, doctors, clinics " +
                                 "FROM patient WHERE id = ?"
                 );
                 statement.setLong(1, id);
                 ResultSet resultSet = statement.executeQuery();
+
                 if (resultSet.next()) {
                     patient = new Patient();
+
+                    Array doctorsArray = resultSet.getArray("doctors");
+                    Integer[] doctorIds = (Integer[]) doctorsArray.getArray();
+                    List<Doctor> doctors = Arrays.stream(doctorIds)
+                            .map(i -> {
+                                Doctor doctor = new Doctor();
+                                try {
+                                    PreparedStatement statementDoctor = connection.prepareStatement(
+                                            "SELECT lastname, firstname, patronymic, specialization " +
+                                                    "FROM doctor WHERE id = ?"
+
+                                    );
+                                    statementDoctor.setLong(1, i);
+                                    ResultSet resultSetDoctor = statementDoctor.executeQuery();
+                                    if (resultSetDoctor.next()) {
+                                        doctor.setId(Long.valueOf(i));
+                                        doctor.setLastName(resultSetDoctor.getString("lastname"));
+                                        doctor.setFirstName(resultSetDoctor.getString("firstname"));
+                                        doctor.setPatronymic(resultSetDoctor.getString("patronymic"));
+                                        doctor.setSpecialization(resultSetDoctor.getString("specialization"));
+                                    }
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                return doctor;
+                            })
+                            .toList();
+
+                    Array clinicsArray = resultSet.getArray("clinics");
+                    Integer[] clinicsIds = (Integer[]) clinicsArray.getArray();
+                    List<Clinic> clinics = Arrays.stream(clinicsIds)
+                            .map(i -> {
+                                Clinic clinic = new Clinic();
+                                try {
+                                    PreparedStatement statementClinic = connection.prepareStatement(
+                                            "SELECT name_clinic, address, type_clinic " +
+                                                    "FROM clinic WHERE id = ?"
+
+                                    );
+                                    statementClinic.setLong(1, i);
+                                    ResultSet resultSetClinic = statementClinic.executeQuery();
+                                    if(resultSetClinic.next()) {
+                                        clinic.setId(Long.valueOf(i));
+                                        clinic.setName(resultSetClinic.getString("name_clinic"));
+                                        clinic.setAddress(resultSetClinic.getString("address"));
+                                        clinic.setType(resultSetClinic.getString("type_clinic"));
+                                    }
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                return clinic;
+                            })
+                            .toList();
+
                     patient.setId(id);
                     patient.setLastName(resultSet.getString("lastname"));
                     patient.setFirstName(resultSet.getString("firstname"));
                     patient.setPatronymic(resultSet.getString("patronymic"));
                     patient.setJob(resultSet.getString("job"));
-                    //TODO: add doctors and clinics
+                    patient.setDoctors(doctors);
+                    patient.setClinics(clinics);
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -85,22 +119,118 @@ public class PatientDaoImp implements IPatientDao {
     public List<Patient> getAll() {
         try (Connection connection = source.getConnection()) {
             PreparedStatement statement = connection.prepareStatement("SELECT id, lastname, firstname, patronymic, " +
-                    "job FROM patient");
+                    "job, doctors, clinics FROM patient");
             ResultSet resultSet = statement.executeQuery();
             List<Patient> patients = new ArrayList<>();
             while (resultSet.next()) {
                 Patient patient = new Patient();
+
+                Array doctorsArray = resultSet.getArray("doctors");
+                Integer[] doctorIds = (Integer[]) doctorsArray.getArray();
+                List<Doctor> doctors = Arrays.stream(doctorIds)
+                        .map(i -> {
+                            Doctor doctor = new Doctor();
+                            try {
+                                PreparedStatement statementDoctor = connection.prepareStatement(
+                                        "SELECT lastname, firstname, patronymic, specialization " +
+                                                "FROM doctor WHERE id = ?"
+
+                                );
+                                statementDoctor.setLong(1, i);
+                                ResultSet resultSetDoctor = statementDoctor.executeQuery();
+                                if (resultSetDoctor.next()) {
+                                    doctor.setId(Long.valueOf(i));
+                                    doctor.setLastName(resultSetDoctor.getString("lastname"));
+                                    doctor.setFirstName(resultSetDoctor.getString("firstname"));
+                                    doctor.setPatronymic(resultSetDoctor.getString("patronymic"));
+                                    doctor.setSpecialization(resultSetDoctor.getString("specialization"));
+                                }
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                            return doctor;
+                        })
+                        .toList();
+
+                Array clinicsArray = resultSet.getArray("clinics");
+                Integer[] clinicsIds = (Integer[]) clinicsArray.getArray();
+                List<Clinic> clinics = Arrays.stream(clinicsIds)
+                        .map(i -> {
+                            Clinic clinic = new Clinic();
+                            try {
+                                PreparedStatement statementClinic = connection.prepareStatement(
+                                        "SELECT name_clinic, address, type_clinic " +
+                                                "FROM clinic WHERE id = ?"
+
+                                );
+                                statementClinic.setLong(1, i);
+                                ResultSet resultSetClinic = statementClinic.executeQuery();
+                                if(resultSetClinic.next()) {
+                                    clinic.setId(Long.valueOf(i));
+                                    clinic.setName(resultSetClinic.getString("name_clinic"));
+                                    clinic.setAddress(resultSetClinic.getString("address"));
+                                    clinic.setType(resultSetClinic.getString("type_clinic"));
+                                }
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                            return clinic;
+                        })
+                        .toList();
+
                 patient.setId(resultSet.getLong("id"));
                 patient.setLastName(resultSet.getString("lastname"));
                 patient.setFirstName(resultSet.getString("firstname"));
                 patient.setPatronymic(resultSet.getString("patronymic"));
                 patient.setJob(resultSet.getString("job"));
-                //TODO: add doctors and clinics
+                patient.setDoctors(doctors);
+                patient.setClinics(clinics);
+
                 patients.add(patient);
             }
             return patients;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * The saves in the database the entity Patient.
+     * @param patient the entity Patient.
+     * @throws SQLException
+     */
+    @Override
+    public void save(Patient patient) throws SQLException {
+        if (patient != null) {
+            try(Connection connection = source.getConnection()) {
+                List<Long> idDoctors = patient.getDoctors()
+                        .stream()
+                        .map(People::getId)
+                        .toList();
+                Array doctorIds = connection.createArrayOf("int4", idDoctors.toArray());
+
+                List<Long> idClinics = patient.getClinics()
+                        .stream()
+                        .map(Clinic::getId)
+                        .toList();
+                Array clinicIds = connection.createArrayOf("int4", idClinics.toArray());
+
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO patient (lastname, firstname, " +
+                        "patronymic, job, doctors, clinics) " +
+                        "VALUES (?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+                statement.setString(1, patient.getLastName());
+                statement.setString(2, patient.getFirstName());
+                statement.setString(3, patient.getPatronymic());
+                statement.setString(4, patient.getJob());
+                statement.setArray(5, doctorIds);
+                statement.setArray(6, clinicIds);
+                statement.executeUpdate();
+
+                ResultSet resultSet = statement.getGeneratedKeys();
+                if(resultSet.next()) {
+                    patient.setId((resultSet.getLong(1)));
+                }
+            }
         }
     }
 
@@ -111,14 +241,29 @@ public class PatientDaoImp implements IPatientDao {
     @Override
     public void update(Patient patient) {
         try (Connection connection = source.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("UPDATE patient SET lastname = ?, firstname = ?, " +
-                    "patronymic = ?, job = ? WHERE id = ?");
+            PreparedStatement statement = connection.prepareStatement("UPDATE patient SET lastname=?, firstname=?, " +
+                    "patronymic=?, job=?, doctors=?, clinics=? WHERE id=?");
+
+            List<Long> idDoctors = patient.getDoctors()
+                    .stream()
+                    .map(People::getId)
+                    .toList();
+            Array doctorIds = connection.createArrayOf("int4", idDoctors.toArray());
+
+            List<Long> idClinics = patient.getClinics()
+                    .stream()
+                    .map(Clinic::getId)
+                    .toList();
+            Array clinicIds = connection.createArrayOf("int4", idClinics.toArray());
+
             statement.setString(1, patient.getLastName());
             statement.setString(2, patient.getFirstName());
             statement.setString(3, patient.getPatronymic());
             statement.setString(4, patient.getJob());
-            //TODO: add doctors and clinicsstn
-            statement.setLong(5, patient.getId());
+            statement.setArray(5, doctorIds);
+            statement.setArray(6, clinicIds);
+            statement.setLong(7, patient.getId());
+
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -139,6 +284,6 @@ public class PatientDaoImp implements IPatientDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return false;
+        return true;
     }
 }

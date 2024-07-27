@@ -1,7 +1,6 @@
 package controller;
 
 import com.google.gson.Gson;
-import dao.DoctorDaoImp;
 import dto.DoctorDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import service.DoctorService;
 import util.DataPropertiesUtil;
 
+import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -29,7 +29,8 @@ public class DoctorServlet extends HttpServlet {
      */
     @Override
     public void init() {
-        this.doctorService = new DoctorService(new DoctorDaoImp(DataPropertiesUtil.getDataSource()));
+        DataSource source = DataPropertiesUtil.getDataSource();
+        this.doctorService = new DoctorService(source);
     }
 
     /**

@@ -3,17 +3,16 @@ package dto;
 import model.Clinic;
 import model.Doctor;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 public class PatientDTO {
     private Long id;
     private String lastName, firstName, patronymic, job;
-    private List<Doctor> doctors;
     private List<Clinic> clinics;
+    private List<Doctor> doctors;
 
     public Long getId() {
+
         return id;
     }
 
@@ -53,19 +52,19 @@ public class PatientDTO {
         this.job = job;
     }
 
-    public List<Doctor> getDoctors() {
-        return doctors;
-    }
-
-    public void setDoctors(List<Doctor> doctors) {
-        this.doctors = doctors;
-    }
-
     public List<Clinic> getClinics() {
         return clinics;
     }
 
     public void setClinics(List<Clinic> clinics) {
         this.clinics = clinics;
+    }
+
+    public List<Doctor> getDoctors() {
+        return doctors;
+    }
+
+    public void setDoctors(List<Doctor> doctors) {
+        this.doctors = doctors;
     }
 }

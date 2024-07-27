@@ -1,7 +1,6 @@
 package controller;
 
 import com.google.gson.Gson;
-import dao.PatientDaoImp;
 import dto.PatientDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,8 +10,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import service.PatientService;
 import util.DataPropertiesUtil;
 
+import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Serial;
 import java.sql.SQLException;
 
 /**
@@ -20,6 +21,7 @@ import java.sql.SQLException;
  */
 @WebServlet("/patients/*")
 public class PatientServlet extends HttpServlet {
+    @Serial
     private static final long serialVersionUID = 1L;
     private PatientService patientService;
     private final Gson gson = new Gson();
@@ -29,14 +31,14 @@ public class PatientServlet extends HttpServlet {
      */
     @Override
     public void init() {
-        this.patientService = new PatientService(new PatientDaoImp(DataPropertiesUtil.getDataSource()));
+        DataSource source = DataPropertiesUtil.getDataSource();
+        this.patientService = new PatientService(source);
     }
 
     /**
      * The method is necessary to obtain data on the ID of one Patient or all.
      * @param req request.
      * @param resp response.
-     * @throws IOException
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -62,8 +64,6 @@ public class PatientServlet extends HttpServlet {
      * This method receives data from the Patient entity and transfers it to the service for saving in the database.
      * @param req request.
      * @param resp response.
-     * @throws ServletException
-     * @throws IOException
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -93,8 +93,6 @@ public class PatientServlet extends HttpServlet {
      * This method receives data from the Patient entity and transfers it to the service for updating in the database.
      * @param req request.
      * @param resp response.
-     * @throws ServletException
-     * @throws IOException
      */
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -129,11 +127,9 @@ public class PatientServlet extends HttpServlet {
      * This method receives the ID of the Patient entity from the server and passes it to the service to remove it from the database.
      * @param req request.
      * @param resp response.
-     * @throws ServletException
-     * @throws IOException
      */
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo();
         try {
             if (pathInfo == null || pathInfo.equals("/")) {

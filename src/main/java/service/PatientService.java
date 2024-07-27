@@ -5,6 +5,7 @@ import dto.PatientDTO;
 import mapper.PatientMapper;
 import model.Patient;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,10 +18,11 @@ public class PatientService {
 
     /**
      * Constructor with the entity parameter PatientDaoImp.
-     * @param patientDaoImp entity parameter PatientDaoImp.
+     * @param source it is the date source.
      */
-    public PatientService(PatientDaoImp patientDaoImp) {
-        this.patientDaoImp = patientDaoImp;
+
+    public PatientService(DataSource source) {
+        this.patientDaoImp = new PatientDaoImp(source);
     }
 
 
@@ -50,7 +52,6 @@ public class PatientService {
     /**
      * The method receives from the controller the entity PatientDTO and saves in the database the entity Patient.
      * @param patientDTO the entity PatientDTO.
-     * @throws SQLException
      */
     public void save(PatientDTO patientDTO) throws SQLException {
         Patient patient = PatientMapper.INSTANCE.DTOtoPatient(patientDTO);
@@ -60,7 +61,6 @@ public class PatientService {
     /**
      * The method receives from the controller the entity PatientDTO and changes the entity Patient in the database.
      * @param patientDTO the entity PatientDTO.
-     * @throws SQLException
      */
     public void update(PatientDTO patientDTO) throws SQLException {
         Patient patient = PatientMapper.INSTANCE.DTOtoPatient(patientDTO);

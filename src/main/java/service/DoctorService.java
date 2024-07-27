@@ -5,6 +5,7 @@ import dto.DoctorDTO;
 import mapper.DoctorMapper;
 import model.Doctor;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,10 +18,9 @@ public class DoctorService {
 
     /**
      * Constructor with the entity parameter DoctorDaoImp.
-     * @param doctorDaoImp entity parameter DoctorDaoImp.
      */
-    public DoctorService(DoctorDaoImp doctorDaoImp) {
-        this.doctorDaoImp = doctorDaoImp;
+    public DoctorService(DataSource source) {
+        this.doctorDaoImp = new DoctorDaoImp(source);
     }
 
 
