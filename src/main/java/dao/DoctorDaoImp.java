@@ -57,7 +57,7 @@ public class DoctorDaoImp implements IDoctorDao {
         if (id != null) {
             try(Connection connection = source.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement(
-                        "SELECT lastname, firstname, patronymic, specialization" +
+                        "SELECT lastname, firstname, patronymic, specialization " +
                                 "FROM doctor WHERE id = ?"
                 );
                 statement.setLong(1, id);

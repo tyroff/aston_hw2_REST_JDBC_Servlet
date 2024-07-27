@@ -8,6 +8,7 @@ import model.People;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,21 +43,23 @@ public class ClinicDaoImp implements IClinicDao {
                         .stream()
                         .map(People::getId)
                         .toList();
+                Array doctorIds = connection.createArrayOf("int4", idDoctors.toArray());
 
                 List<Long> idPatients = clinic.getPatients()
                         .stream()
                         .map(People::getId)
                         .toList();
+                Array patientIds = connection.createArrayOf("int4", idPatients.toArray());
 
                 PreparedStatement statement = connection.prepareStatement(
-                        "INSERT INTO clinic (name, address, type, doctors,  patients) " +
+                        "INSERT INTO clinic (name_clinic, address, type_clinic, doctors,  patients) " +
                         "VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 
                 statement.setString(1, clinic.getName());
                 statement.setString(2, clinic.getAddress());
                 statement.setString(3, clinic.getType());
-                statement.setArray(4, (Array) idDoctors);
-                statement.setArray(5, (Array) idPatients);
+                statement.setArray(4, doctorIds);
+                statement.setArray(5, patientIds);
                 statement.executeUpdate();
 
                 ResultSet resultSet = statement.getGeneratedKeys();
@@ -79,23 +82,33 @@ public class ClinicDaoImp implements IClinicDao {
         if (id != null) {
             try(Connection connection = source.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement(
-                        "SELECT name, address, type, doctors, patients FROM clinic WHERE id = ?"
+                        "SELECT name_clinic, address, type_clinic, doctors, patients FROM clinic WHERE id = ?"
                 );
                 statement.setLong(1, id);
                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
                     clinic = new Clinic();
 
-                    List<Long> idDoctors = (List<Long>) resultSet.getArray("doctors");
-                    List<Doctor> doctors = idDoctors.stream().map(doctorDaoImp::getById).toList();
+                    Array doctorsArray = resultSet.getArray("doctors");
+                    Integer[] doctorIds = (Integer[]) doctorsArray.getArray();
+                    List<Doctor> doctors = Arrays.stream(doctorIds)
+                            .map(i -> {
+                                return doctorDaoImp.getById(Long.valueOf(i));
+                            })
+                            .toList();
 
-                    List<Long> idPatients = (List<Long>) resultSet.getArray("patients");
-                    List<Patient> patients = idPatients.stream().map(patientDaoImp::getById).toList();
+                    Array patientsArray = resultSet.getArray("patients");
+                    Integer[] patientsIds = (Integer[]) patientsArray.getArray();
+                    List<Patient> patients = Arrays.stream(patientsIds)
+                            .map(i -> {
+                                return patientDaoImp.getById(Long.valueOf(i));
+                            })
+                            .toList();
 
                     clinic.setId(id);
-                    clinic.setName(resultSet.getString("name"));
+                    clinic.setName(resultSet.getString("name_clinic"));
                     clinic.setAddress(resultSet.getString("address"));
-                    clinic.setType(resultSet.getString("type"));
+                    clinic.setType(resultSet.getString("type_clinic"));
                     clinic.setDoctors(doctors);
                     clinic.setPatients(patients);
                 }
@@ -113,22 +126,32 @@ public class ClinicDaoImp implements IClinicDao {
     @Override
     public List<Clinic> getAll() {
         try (Connection connection = source.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT id, name, address, type, doctors, patients FROM clinic");
+            PreparedStatement statement = connection.prepareStatement("SELECT id, name_clinic, address, type_clinic, doctors, patients FROM clinic");
             ResultSet resultSet = statement.executeQuery();
             List<Clinic> clinics = new ArrayList<>();
             while (resultSet.next()) {
                 Clinic clinic = new Clinic();
 
-                List<Long> idDoctors = (List<Long>) resultSet.getArray("doctors");
-                List<Doctor> doctors = idDoctors.stream().map(doctorDaoImp::getById).toList();
+                Array doctorsArray = resultSet.getArray("doctors");
+                Integer[] doctorIds = (Integer[]) doctorsArray.getArray();
+                List<Doctor> doctors = Arrays.stream(doctorIds)
+                        .map(i -> {
+                            return doctorDaoImp.getById(Long.valueOf(i));
+                        })
+                        .toList();
 
-                List<Long> idPatients = (List<Long>) resultSet.getArray("patients");
-                List<Patient> patients = idPatients.stream().map(patientDaoImp::getById).toList();
+                Array patientsArray = resultSet.getArray("patients");
+                Integer[] patientsIds = (Integer[]) patientsArray.getArray();
+                List<Patient> patients = Arrays.stream(patientsIds)
+                        .map(i -> {
+                            return patientDaoImp.getById(Long.valueOf(i));
+                        })
+                        .toList();
 
                 clinic.setId(resultSet.getLong("id"));
-                clinic.setName(resultSet.getString("name"));
+                clinic.setName(resultSet.getString("name_clinic"));
                 clinic.setAddress(resultSet.getString("address"));
-                clinic.setType(resultSet.getString("type"));
+                clinic.setType(resultSet.getString("type_clinic"));
                 clinic.setDoctors(doctors);
                 clinic.setPatients(patients);
 
@@ -147,24 +170,26 @@ public class ClinicDaoImp implements IClinicDao {
     @Override
     public void update(Clinic clinic) {
         try (Connection connection = source.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("UPDATE clinic SET name = ?, address = ?, " +
-                    "type = ?, doctors = ?, patients = ? WHERE id = ?");
+            PreparedStatement statement = connection.prepareStatement("UPDATE clinic SET name_clinic = ?, address = ?, " +
+                    "type_clinic = ?, doctors = ?, patients = ? WHERE id = ?");
 
             List<Long> idDoctors = clinic.getDoctors()
                     .stream()
                     .map(People::getId)
                     .toList();
+            Array doctorIds = connection.createArrayOf("int4", idDoctors.toArray());
 
             List<Long> idPatients = clinic.getPatients()
                     .stream()
                     .map(People::getId)
                     .toList();
+            Array patientIds = connection.createArrayOf("int4", idPatients.toArray());
 
             statement.setString(1, clinic.getName());
             statement.setString(2, clinic.getAddress());
             statement.setString(3, clinic.getType());
-            statement.setString(4, String.valueOf(idDoctors));
-            statement.setString(5, String.valueOf(idPatients));
+            statement.setArray(4, doctorIds);
+            statement.setArray(5, patientIds);
             statement.setLong(6, clinic.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -186,6 +211,6 @@ public class ClinicDaoImp implements IClinicDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return false;
+        return true;
     }
 }

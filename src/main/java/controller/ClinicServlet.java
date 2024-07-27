@@ -136,7 +136,7 @@ public class ClinicServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
-                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Need patient ID for deleting.");
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Need clinic ID for deleting.");
             } else {
                 Long id = Long.parseLong(pathInfo.split("/")[1]);
                 if (clinicService.deleteById(id)) {
