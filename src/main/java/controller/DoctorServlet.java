@@ -30,7 +30,7 @@ public class DoctorServlet extends HttpServlet {
      */
     @Override
     public void init() {
-        this.doctorService = new DoctorService((DataSource) new DoctorDaoImp(DataPropertiesUtil.getDataSource()));
+        this.doctorService = new DoctorService(new DoctorDaoImp(DataPropertiesUtil.getDataSource()));
     }
 
     /**
