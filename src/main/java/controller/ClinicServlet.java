@@ -1,6 +1,7 @@
 package controller;
 
 import com.google.gson.Gson;
+import dao.ClinicDaoImp;
 import dto.ClinicDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -31,8 +32,7 @@ public class ClinicServlet extends HttpServlet {
      */
     @Override
     public void init() {
-        DataSource source = DataPropertiesUtil.getDataSource();
-        this.clinicService = new ClinicService(source);
+        this.clinicService = new ClinicService((DataSource) new ClinicDaoImp(DataPropertiesUtil.getDataSource()));
     }
 
     /**

@@ -18,11 +18,10 @@ public class PatientService {
 
     /**
      * Constructor with the entity parameter PatientDaoImp.
-     * @param source it is the date source.
+     * @param patientDaoImp entity PatientDaoImp.
      */
-
-    public PatientService(DataSource source) {
-        this.patientDaoImp = new PatientDaoImp(source);
+    public PatientService(PatientDaoImp patientDaoImp) {
+        this.patientDaoImp = patientDaoImp;
     }
 
 

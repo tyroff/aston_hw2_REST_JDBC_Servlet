@@ -1,6 +1,8 @@
 package controller;
 
 import com.google.gson.Gson;
+import com.zaxxer.hikari.HikariConfig;
+import dao.PatientDaoImp;
 import dto.PatientDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -31,8 +33,7 @@ public class PatientServlet extends HttpServlet {
      */
     @Override
     public void init() {
-        DataSource source = DataPropertiesUtil.getDataSource();
-        this.patientService = new PatientService(source);
+        this.patientService = new PatientService(new PatientDaoImp(DataPropertiesUtil.getDataSource()));
     }
 
     /**
