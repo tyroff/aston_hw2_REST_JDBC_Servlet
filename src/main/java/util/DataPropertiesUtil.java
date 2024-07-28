@@ -35,7 +35,7 @@ public final class DataPropertiesUtil {
         return ds.getConnection();
     }
 
-    private static Properties loadProperties() throws IOException {
+    public static Properties loadProperties() throws IOException {
         Properties properties = new Properties();
 
         try (InputStream inputStream = DataPropertiesUtil.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE)) {
