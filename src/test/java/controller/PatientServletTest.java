@@ -35,6 +35,7 @@ class PatientServletTest {
     @InjectMocks
     private PatientServlet patientServlet;
 
+
     private final Gson gson = new Gson();
 
     @BeforeEach
@@ -110,9 +111,9 @@ class PatientServletTest {
 
     @Test
     public void doPostTest() throws IOException, ServletException, SQLException {
-        String userJson = "{\"lastName\":\"I am\",\"firstName\":\"The\",\"patronymic\":\"Batman\",\"job\":\"Defend\"}";
+        String patientJson = "{\"lastName\":\"I am\",\"firstName\":\"The\",\"patronymic\":\"Batman\",\"job\":\"Defend\"}";
 
-        BufferedReader reader = new BufferedReader(new StringReader(userJson));
+        BufferedReader reader = new BufferedReader(new StringReader(patientJson));
         when(request.getReader()).thenReturn(reader);
 
         patientServlet.doPost(request, response);

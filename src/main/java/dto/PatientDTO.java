@@ -12,7 +12,6 @@ public class PatientDTO {
     private List<Doctor> doctors;
 
     public Long getId() {
-
         return id;
     }
 

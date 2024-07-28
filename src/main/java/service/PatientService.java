@@ -24,7 +24,6 @@ public class PatientService {
         this.patientDaoImp = patientDaoImp;
     }
 
-
     /**
      * Returns one entity PatientDTO by id otherwise null.
      * @param id id of entity Patient.
