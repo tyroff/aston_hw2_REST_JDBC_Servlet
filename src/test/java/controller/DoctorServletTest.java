@@ -94,7 +94,7 @@ class DoctorServletTest {
         doctorDTO1.setSpecialization("Specialization doGetAllTest");
 
         DoctorDTO doctorDTO2 = new DoctorDTO();
-        doctorDTO2.setId(1L);
+        doctorDTO2.setId(2L);
         doctorDTO2.setLastName("Lastname doGetAllTest");
         doctorDTO2.setFirstName("Firstname doGetAllTest");
         doctorDTO2.setPatronymic("Patronymic doGetAllTest");

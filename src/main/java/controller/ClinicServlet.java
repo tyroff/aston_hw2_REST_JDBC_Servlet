@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import service.ClinicService;
 import util.DataPropertiesUtil;
 
-import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Serial;
@@ -77,9 +76,7 @@ public class ClinicServlet extends HttpServlet {
         try {
             if (clinicDTO.getName() == null || clinicDTO.getName().isEmpty()
                     || clinicDTO.getAddress() == null || clinicDTO.getAddress().isEmpty()
-                    || clinicDTO.getType() == null || clinicDTO.getType().isEmpty()
-                    || clinicDTO.getDoctors() == null || clinicDTO.getDoctors().isEmpty()
-                    || clinicDTO.getPatients() == null || clinicDTO.getPatients().isEmpty()) {
+                    || clinicDTO.getType() == null || clinicDTO.getType().isEmpty()) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "All fields must be filled in.");
                 return;
             }
@@ -110,9 +107,7 @@ public class ClinicServlet extends HttpServlet {
             clinicDTO.setId(id);
             if (clinicDTO.getName() == null || clinicDTO.getName().isEmpty()
                     || clinicDTO.getAddress() == null || clinicDTO.getAddress().isEmpty()
-                    || clinicDTO.getType() == null || clinicDTO.getType().isEmpty()
-                    || clinicDTO.getDoctors() == null || clinicDTO.getDoctors().isEmpty()
-                    || clinicDTO.getPatients() == null || clinicDTO.getPatients().isEmpty()) {
+                    || clinicDTO.getType() == null || clinicDTO.getType().isEmpty()) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "All fields must be filled in.");
                 return;
             }
