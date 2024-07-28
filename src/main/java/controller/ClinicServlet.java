@@ -32,7 +32,7 @@ public class ClinicServlet extends HttpServlet {
      */
     @Override
     public void init() {
-        this.clinicService = new ClinicService((DataSource) new ClinicDaoImp(DataPropertiesUtil.getDataSource()));
+        this.clinicService = new ClinicService(new ClinicDaoImp(DataPropertiesUtil.getDataSource()));
     }
 
     /**

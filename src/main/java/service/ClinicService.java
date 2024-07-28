@@ -19,8 +19,8 @@ public class ClinicService {
     /**
      * Constructor with the entity parameter ClinicDaoImp.
      */
-    public ClinicService(DataSource source) {
-        this.clinicDaoImp = new ClinicDaoImp(source);
+    public ClinicService(ClinicDaoImp clinicDaoImp) {
+        this.clinicDaoImp = clinicDaoImp;
     }
 
 

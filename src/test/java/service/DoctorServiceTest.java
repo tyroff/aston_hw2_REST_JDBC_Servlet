@@ -101,5 +101,4 @@ class DoctorServiceTest {
 
         Mockito.verify(doctorDaoImp, Mockito.times(1)).deleteById(1L);
     }
-
 }
