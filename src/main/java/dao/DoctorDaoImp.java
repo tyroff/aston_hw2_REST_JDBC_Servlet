@@ -37,7 +37,11 @@ public class DoctorDaoImp implements IDoctorDao {
                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
                     List<Patient> patients = getAllPatientsByDoctorId(id);
-                    Clinic clinic = getClinicById(resultSet.getLong("clinic_id"));
+                    Long clinicId = resultSet.getLong("clinic_id");
+                    Clinic clinic = null;
+                    if (clinicId > 0L) {
+                        clinic = getClinicById(clinicId);
+                    }
 
                     doctor = new Doctor();
                     doctor.setId(id);
